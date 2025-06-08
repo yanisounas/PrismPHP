@@ -8,8 +8,17 @@ use Dotenv\Exception\InvalidPathException;
 use PrismPHP\Exception\ConfigurationException;
 use PrismPHP\Utils\PathResolver;
 
+/**
+ * Load and manage environment variables.
+ */
 class DotenvLoader
 {
+    /**
+     * Loads environment variables from the `.env` file and any environment-specific, if defined
+     *
+     * @throws ConfigurationException if the `.env` file cannot be found, required variables are missing,
+     * or any error occurs during loading.
+     */
     public static function load(): void
     {
         $dir = PathResolver::getProjectDir();
