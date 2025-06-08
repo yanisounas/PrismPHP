@@ -1,0 +1,26 @@
+{
+    "name": "oy/prism-php",
+    "require": {
+        "php": "^8.0",
+        "vlucas/phpdotenv": "^5.5",
+        "symfony/yaml": "^7.3",
+        "psr/container": "^2.0",
+        "php-di/php-di": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "PrismPHP\\": "src/PrismPHP/",
+            "PrismPHP\\Bundle\\": "src/Bundle/",
+            "App\\": "src-app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PrismPHP\\Tests\\": "tests/"
+        }
+    }
+}
