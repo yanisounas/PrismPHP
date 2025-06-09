@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace PrismPHP;
 
 use Exception;
-use PrismPHP\Config\ServiceLoader;
+use PrismPHP\Config\DefinitionLoader;
 use PrismPHP\Config\DotenvLoader;
+use PrismPHP\Config\Exception\ConfigurationException;
+use PrismPHP\Config\ServiceLoader;
 use PrismPHP\DependencyInjection\ContainerFactory;
-use PrismPHP\Exception\ConfigurationException;
 use PrismPHP\Utils\PathResolver;
 use Psr\Container\ContainerInterface;
 
@@ -44,7 +45,7 @@ class Kernel
      */
     public function boot(): void
     {
-        DotenvLoader::load(); 
+        DotenvLoader::load();
 
         if (($_ENV['APP_ENV'] ?? '') !== $this->_env)
             throw new ConfigurationException(sprintf(
@@ -96,7 +97,7 @@ class Kernel
         ];
 
 
-        $this->_container = ContainerFactory::createFromLoader((new ServiceLoader($this->_configDir, $this->_env)), $runtimeParameters);
+        $this->_container = ContainerFactory::createFromLoader((new DefinitionLoader($this->_configDir, $this->_env)), $runtimeParameters);
     }
 
     public function getContainer(): ContainerInterface

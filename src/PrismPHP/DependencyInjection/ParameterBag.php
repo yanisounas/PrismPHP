@@ -2,7 +2,7 @@
 
 namespace PrismPHP\DependencyInjection;
 
-use PrismPHP\Exception\ParameterNotFoundException;
+use PrismPHP\DependencyInjection\Exception\ParameterNotFoundException;
 
 class ParameterBag implements ParameterBagInterface
 {

@@ -5,7 +5,7 @@ namespace PrismPHP\Config;
 
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidPathException;
-use PrismPHP\Exception\ConfigurationException;
+use PrismPHP\Config\Exception\ConfigurationException;
 use PrismPHP\Utils\PathResolver;
 
 /**

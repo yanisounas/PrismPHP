@@ -4,8 +4,8 @@ namespace PrismPHP\DependencyInjection;
 
 use DI\ContainerBuilder;
 use Exception;
-use PrismPHP\Config\ServiceLoaderInterface;
-use PrismPHP\Exception\ConfigurationException;
+use PrismPHP\Config\DefinitionLoaderInterface;
+use PrismPHP\Config\Exception\ConfigurationException;
 use PrismPHP\Utils\PathResolver;
 use Psr\Container\ContainerInterface;
 use function DI\autowire;
@@ -22,18 +22,19 @@ class ContainerFactory
      *
      * Delegates to {@see \PrismPHP\DependencyInjection\ContainerFactory::create()} for complete documentation
      *
-     * @param ServiceLoaderInterface $loader The loader containing services and parameters.
+     * @param DefinitionLoaderInterface $loader The loader containing services and parameters.
      * @param array<string, mixed> $runtimeParameters
      * @return ContainerInterface
      *
      * @throws Exception
      * @see \PrismPHP\DependencyInjection\ContainerFactory::create()
      */
-    public static function createFromLoader(ServiceLoaderInterface $loader, array $runtimeParameters = []): ContainerInterface
+    public static function createFromLoader(DefinitionLoaderInterface $loader, array $runtimeParameters = []): ContainerInterface
     {
         return self::create(
-            $loader->getServicesDefinitions(),
-            $loader->getParametersDefinitions(),
+            $loader->getServices(),
+            $loader->getParameters(),
+            $loader->getDICSettings(),
             $runtimeParameters
         );
     }
@@ -41,9 +42,10 @@ class ContainerFactory
     /**
      * Creates a DI container with the given service and parameter definitions.
      *
-     * @param array<string, mixed> $services           Array of service definitions to be injected into the container
-     * @param array<string, mixed> $parameters         Array of parameter definitions to be injected into the container.
-     * @param array<string, mixed> $runtimeParameters  Runtime-calculated parameters (key => value)
+     * @param array<string, mixed> $services            Array of service definitions to be injected into the container
+     * @param array<string, mixed> $parameters          Array of parameter definitions to be injected into the container.
+     * @param array<string, bool|string> $DICSettings   Array of DI Container settings (autowire, attributes, compilation)
+     * @param array<string, mixed> $runtimeParameters   Runtime-calculated parameters (key => value)
      * used to augment configuration loaded from the YAML files. Any parameter defined in YAML with the same key will
      * override the corresponding runtime parameter.
      *
@@ -54,37 +56,39 @@ class ContainerFactory
     public static function create(
         array $services,
         array $parameters,
+        array $DICSettings,
         array $runtimeParameters = [],
     ): ContainerInterface
     {
-        if (!isset($services['_defaults']) || !is_array($services['_defaults']))
-            throw new ConfigurationException("Missing or invalid `_defaults` key in services.yaml.");
-
-        $defaults= $services['_defaults'];
-        unset($services['_defaults']);
-
-        foreach (['autowire', 'attributes', 'compilation'] as $key)
+        if (!empty($DICSettings))
         {
-            if (!isset($defaults[$key])) continue;
+            foreach ($DICSettings as $key => $value)
+            {
+                if (!in_array($key, ['autowire', 'attributes', 'compilation']))
+                    throw new ConfigurationException(sprintf(
+                        "Unknown DI Container setting key `%s` in services.php", $key
+                        )
+                    );
 
-            $normalized = filter_var($defaults[$key], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            if ($normalized === null)
-                throw new ConfigurationException(sprintf(
-                    "`_defaults.%s` must be a boolean in services.yaml, got `%s`.",
-                    $key,
-                    is_scalar($defaults[$key]) ? var_export($defaults[$key], true) : gettype($defaults[$key])
-                    )
-                );
+                $normalized = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                if ($normalized === null)
+                    throw new ConfigurationException(sprintf(
+                        "`%s` must be a boolean in services.php, got `%s`.",
+                            $key,
+                            is_scalar($value) ? var_export($value, true) : gettype($value),
+                        )
+                    );
 
-            $defaults[$key] = $normalized;
+                $DICSettings[$key] = $normalized;
+            }
         }
 
         $parameters = array_merge($runtimeParameters, $parameters);
 
         $builder = new ContainerBuilder();
 
-        $builder->useAutowiring(($defaults['autowire'] ?? true));
-        $builder->useAttributes(($defaults['attributes'] ?? false));
+        $builder->useAutowiring(($DICSettings['autowire'] ?? true));
+        $builder->useAttributes(($DICSettings['attributes'] ?? false));
 
         $builder->addDefinitions([
             ParameterBag::class => autowire()->constructor($parameters),
@@ -94,7 +98,7 @@ class ContainerFactory
         $builder->addDefinitions($parameters);
         $builder->addDefinitions($services);
 
-        if (isset($defaults['compilation']) && $defaults['compilation'] === true)
+        if (isset($DICSettings['compilation']) && $DICSettings['compilation'] === true)
         {
             $cacheDir = PathResolver::getCacheDir() . "/di";
             if (!is_dir($cacheDir) && !mkdir($cacheDir, 0777, true) && !is_dir($cacheDir))

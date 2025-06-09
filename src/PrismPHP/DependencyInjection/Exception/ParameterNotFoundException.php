@@ -1,5 +1,5 @@
 <?php
 
-namespace PrismPHP\Exception;
+namespace PrismPHP\DependencyInjection\Exception;
 
 class ParameterNotFoundException extends \RuntimeException {}

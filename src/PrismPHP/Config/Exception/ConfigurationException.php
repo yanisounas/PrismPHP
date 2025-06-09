@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PrismPHP\Exception;
+namespace PrismPHP\Config\Exception;
 
 /**
  * Represents an exception that occurs during configuration processing.
