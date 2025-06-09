@@ -9,7 +9,9 @@ use PrismPHP\Config\Exception\ConfigurationException;
 use PrismPHP\Utils\PathResolver;
 use Psr\Container\ContainerInterface;
 use function DI\autowire;
+use function DI\factory;
 use function DI\get;
+use DI\Scope;
 
 /**
  * Creates a dependency injection container
@@ -35,6 +37,7 @@ class ContainerFactory
             $loader->getServices(),
             $loader->getParameters(),
             $loader->getDICSettings(),
+            $loader->getProviders(),
             $runtimeParameters
         );
     }
@@ -57,6 +60,7 @@ class ContainerFactory
         array $services,
         array $parameters,
         array $DICSettings,
+        array $providers,
         array $runtimeParameters = [],
     ): ContainerInterface
     {
@@ -85,6 +89,19 @@ class ContainerFactory
 
         $parameters = array_merge($runtimeParameters, $parameters);
 
+        $normalizedProviders = [];
+        foreach ($providers as $providerClass)
+        {
+            if(!class_exists($providerClass))
+                throw new ConfigurationException(sprintf(
+                    "Provider `%s` does not exist", $providerClass
+                    )
+                );
+
+            foreach ((new $providerClass())->register() as $id => $callable)
+                $normalizedProviders[$id] = factory($callable);
+        }
+
         $builder = new ContainerBuilder();
 
         $builder->useAutowiring(($DICSettings['autowire'] ?? true));
@@ -95,8 +112,7 @@ class ContainerFactory
             ParameterBagInterface::class => get(ParameterBag::class),
         ]);
 
-        $builder->addDefinitions($parameters);
-        $builder->addDefinitions($services);
+        $builder->addDefinitions(array_merge($parameters, $services, $normalizedProviders));
 
         if (isset($DICSettings['compilation']) && $DICSettings['compilation'] === true)
         {

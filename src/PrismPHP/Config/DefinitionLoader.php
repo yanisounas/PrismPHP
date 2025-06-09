@@ -10,6 +10,11 @@ class DefinitionLoader implements DefinitionLoaderInterface
 
     public function __construct(private readonly string $_configDir, private readonly string $_env) {}
 
+    public function getProviders(): array
+    {
+        return $this->getDefinitions()['providers'] ?? [];
+    }
+
     /**
      * Retrieves the definitions. If definitions are not already loaded,
      * it triggers the loading process.

@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'providers' => [
+        PrismPHP\Logging\Provider\LoggerServiceProvider::class,
+    ],
+
     'services' => [
         'PrismPHP\\' => ['resource' => 'src-app']
     ],

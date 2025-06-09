@@ -2,18 +2,9 @@
 declare(strict_types=1);
 
 use PrismPHP\Config\Exception\ConfigurationException;
-use PrismPHP\DependencyInjection\ParameterBagInterface;
 use PrismPHP\Kernel;
 
 require __DIR__.'/../vendor/autoload.php';
-
-class Test
-{
-    public function __construct(ParameterBagInterface $parameterBag)
-    {
-        echo $parameterBag->get('kernel.project_dir');
-    }
-}
 
 /*
  * TODOs (in priority order):
@@ -32,14 +23,11 @@ class Test
  * TODO 12. Write binaries (migrations, project scaffolding, …)
  */
 
+
 try {
-    $env = $_SERVER['APP_ENV'] ?? 'dev';
-    $kernel = new Kernel($env);
+    $kernel = new Kernel();
 
     $kernel->boot();
-
-    $kernel->getContainer()->get(Test::class);
-
 } catch (ConfigurationException $e) {
     echo "ConfigurationException :\n" . $e->getMessage();
     exit(1);

@@ -8,6 +8,7 @@ namespace PrismPHP\Config;
  */
 interface DefinitionLoaderInterface
 {
+    public function getProviders(): array;
     public function getDefinitions(): array;
     public function getParameters(): array;
     public function getServices(): array;
