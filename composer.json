@@ -1,5 +1,5 @@
 {
-    "name": "oy/prism-php",
+    "name": "prismphp/prismphp",
     "require": {
         "php": "^8.1",
         "vlucas/phpdotenv": "^5.5",

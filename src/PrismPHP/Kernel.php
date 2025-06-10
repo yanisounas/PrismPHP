@@ -10,7 +10,6 @@ use PrismPHP\Config\Exception\ConfigurationException;
 use PrismPHP\DependencyInjection\ContainerFactory;
 use PrismPHP\Utils\PathResolver;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Represents the core application kernel responsible for initializing

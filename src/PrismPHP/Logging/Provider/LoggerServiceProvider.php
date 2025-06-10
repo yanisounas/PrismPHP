@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace PrismPHP\Logging\Provider;
 
@@ -11,7 +12,6 @@ use Monolog\Logger;
 use PrismPHP\Config\Exception\ConfigurationException;
 use PrismPHP\Config\ServiceProviderInterface;
 use PrismPHP\DependencyInjection\ParameterBagInterface;
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class LoggerServiceProvider implements ServiceProviderInterface

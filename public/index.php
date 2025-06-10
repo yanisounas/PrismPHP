@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use PrismPHP\Config\Exception\ConfigurationException;
 use PrismPHP\Kernel;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -9,9 +8,9 @@ require __DIR__.'/../vendor/autoload.php';
 /*
  * TODOs (in priority order):
  *
- * TODO 1.  Add PHPDoc annotations
- * TODO 2.  Integrate logging
- * TODO 3.  Improve exception handling
+ * TODO 1. Continuously add PHPDoc annotations
+ * 2.  Integrate logging (initial logging setup done)
+ * TODO 3.  Improve exception handling (make messages more clearer, remove all bad try/catch and related)
  * TODO 4.  Integrate caching
  * TODO 5.  Create HTTP request/response abstractions
  * TODO 6.  Implement middleware pipeline (error handler, authentication, CSRF, body parsing…)
@@ -23,15 +22,16 @@ require __DIR__.'/../vendor/autoload.php';
  * TODO 12. Write binaries (migrations, project scaffolding, …)
  */
 
+$factory = (new \PrismPHP\Logging\Provider\LoggerServiceProvider())->register()[\Psr\Log\LoggerInterface::class];
+$bootstrapParams = new \PrismPHP\DependencyInjection\ParameterBag([
+    'kernel.logs_dir' => __DIR__ . '/../var/logs',
+    'app.name' => 'bootstrap'
+]);
 
-try {
-    $kernel = new Kernel();
+$logger = $factory($bootstrapParams);
 
-    $kernel->boot();
-} catch (ConfigurationException $e) {
-    echo "ConfigurationException :\n" . $e->getMessage();
-    exit(1);
-} catch (\Throwable $e) {
-    echo "Error :\n" . $e->getMessage();
-    exit(1);
-}
+$exceptionHandler = new \PrismPHP\ExceptionHandler\BootstrapExceptionHandler($logger);
+$exceptionHandler->register();
+
+$kernel = new Kernel();
+$kernel->boot();
