@@ -13,32 +13,35 @@ use PrismPHP\Utils\PathResolver;
  */
 class DotenvLoader
 {
+    public function __construct(private ?string $_envPath = null)
+    {
+       $this->_envPath ??= PathResolver::getProjectDir(); 
+    }
+
     /**
      * Loads environment variables from the `.env` file and any environment-specific, if defined
      *
      * @throws ConfigurationException if the `.env` file cannot be found, required variables are missing,
      * or any error occurs during loading.
      */
-    public static function load(): void
+    public function load(): void
     {
-        $dir = PathResolver::getProjectDir();
-
         try
         {
-            $dotenv = Dotenv::createImmutable($dir, '.env');
+            $dotenv = Dotenv::createImmutable($this->_envPath, '.env');
             $dotenv->load();
 
             $dotenv->required('APP_ENV');
             $envFile =  '.env.'. $_ENV['APP_ENV'];
-            $path = $dir . '/' . $envFile;
+            $path = $this->_envPath. '/' . $envFile;
 
             if (is_file($path))
-                Dotenv::createMutable($dir, $envFile)->load();
+                Dotenv::createMutable($this->_envPath, $envFile)->load();
 
         }catch (InvalidPathException $e)
         {
             throw new ConfigurationException(sprintf(
-                ".env file not found in `%s`.", $dir
+                ".env file not found in `%s`.", $this->_envPath
                 )
             );
         } catch (\Throwable $e)

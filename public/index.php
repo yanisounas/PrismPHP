@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PrismPHP\Kernel;
-
-require __DIR__.'/../vendor/autoload.php';
+require_once dirname(__DIR__) ."/vendor/autoload.php";
 
 /*
  * TODOs (in priority order):
@@ -22,16 +20,4 @@ require __DIR__.'/../vendor/autoload.php';
  * TODO 12. Write binaries (migrations, project scaffolding, …)
  */
 
-$factory = (new \PrismPHP\Logging\Provider\LoggerServiceProvider())->register()[\Psr\Log\LoggerInterface::class];
-$bootstrapParams = new \PrismPHP\DependencyInjection\ParameterBag([
-    'kernel.logs_dir' => __DIR__ . '/../var/logs',
-    'app.name' => 'bootstrap'
-]);
-
-$logger = $factory($bootstrapParams);
-
-$exceptionHandler = new \PrismPHP\ExceptionHandler\BootstrapExceptionHandler($logger);
-$exceptionHandler->register();
-
-$kernel = new Kernel();
-$kernel->boot();
+(new \PrismPHP\Runtime\PrismRuntime())->run();
