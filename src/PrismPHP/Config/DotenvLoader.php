@@ -28,11 +28,11 @@ class DotenvLoader
     {
         try
         {
-            $dotenv = Dotenv::createImmutable($this->_envPath, '.env');
+            $dotenv = Dotenv::createMutable($this->_envPath, ".env");
             $dotenv->load();
 
-            $dotenv->required('APP_ENV');
-            $envFile =  '.env.'. $_ENV['APP_ENV'];
+            $dotenv->required("APP_ENV");
+            $envFile =  ".env." . $_ENV['APP_ENV'];
             $path = $this->_envPath. '/' . $envFile;
 
             if (is_file($path))

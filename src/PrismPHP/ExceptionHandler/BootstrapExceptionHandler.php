@@ -50,14 +50,14 @@ class BootstrapExceptionHandler
 
     private function _output(string $message): void
     {
-        if (php_sapi_name() === 'cli')
+        if (php_sapi_name() === "cli")
         {
             fwrite(STDERR, $message);
         }
         else
         {
             http_response_code(500);
-            header('Content-Type: text/plain;charset=utf-8');
+            header("Content-Type: text/plain;charset=utf-8");
             echo nl2br($message);
         }
     }

@@ -12,7 +12,6 @@ use Psr\Container\ContainerInterface;
 use function DI\autowire;
 use function DI\factory;
 use function DI\get;
-use DI\Scope;
 
 /**
  * Creates a dependency injection container

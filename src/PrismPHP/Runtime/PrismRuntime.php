@@ -63,8 +63,8 @@ class PrismRuntime implements RuntimeInterface
     private function _loadBootstrapServices(): void
     {
         $logger = ((new LoggerServiceProvider())->register()[LoggerInterface::class])(new ParameterBag([
-            'kernel.logs_dir' => PathResolver::getProjectDir() . '/var/logs',
-            'app.name' => 'bootstrap'
+            'kernel.logs_dir' => PathResolver::getProjectDir() . "/var/logs",
+            'app.name' => "bootstrap"
         ]));
 
         (new BootstrapExceptionHandler($logger))->register();

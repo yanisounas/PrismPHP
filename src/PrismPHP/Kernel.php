@@ -41,14 +41,14 @@ class Kernel implements KernelInterface
             'kernel.debug'       => $_ENV['APP_DEBUG'],
 
             'kernel.project_dir' => $projectDir,
-            'kernel.config_dir'  => $projectDir . '/config',
-            'kernel.cache_dir'   => $projectDir . '/var/cache',
-            'kernel.logs_dir'    => $projectDir . '/var/logs',
-            'kernel.public_dir'  => $projectDir . '/public',
-            'kernel.tmp_dir'     => $projectDir . '/var/tmp',
+            'kernel.config_dir'  => $projectDir . "/config",
+            'kernel.cache_dir'   => $projectDir . "/var/cache",
+            'kernel.logs_dir'    => $projectDir . "/var/logs",
+            'kernel.public_dir'  => $projectDir . "/public",
+            'kernel.tmp_dir'     => $projectDir . "/var/tmp",
 
             'cache.default_ttl'  => 3600,
-            'cache.adapter'      => 'filesystem',
+            'cache.adapter'      => "filesystem",
 
             'app.name'           => ($_ENV['APP_NAME']),
             'app.secret'         => ($_ENV['APP_SECRET'] ?? null),
@@ -57,7 +57,7 @@ class Kernel implements KernelInterface
 
             'database.url'       => $_ENV['DATABASE_URL'],
 
-            'template.path'      =>  $projectDir .'/templates',
+            'template.path'      =>  $projectDir ."/templates",
         ];
         $this->_container = ContainerFactory::createFromLoader((new DefinitionLoader($projectDir . "/config", $this->_env)), $runtimeParameters);
     }
